@@ -1,16 +1,21 @@
-#include <vector>
 #include <algorithm>
 #include <stdexcept>
+#include <vector>
 using namespace std;
 struct WaveletTree {
+  private:
     WaveletTree *x = nullptr, *y = nullptr;
     int low, high, mid;
     vector<int> pref;
     typedef vector<int>::iterator iter;
+
+  public:
     WaveletTree(iter L, iter R, int mn, int mx) : x(nullptr), y(nullptr), low(mn), high(mx) {
         if (low == high || L >= R) return;
         mid = (low + high) / 2;
         pref.push_back(0);
+        // potentially replacable with fenwick tree to support certain types of updates
+        // with log(N) to log^2(N) complexity which is mostly sufficient
         for (auto it = L; it != R; ++it) pref.push_back(pref.back() + (*it <= mid));
         auto pivot = stable_partition(L, R, [&](int x) { return x <= mid; });
         x = new WaveletTree(L, pivot, low, mid);
